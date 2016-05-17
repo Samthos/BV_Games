@@ -33,15 +33,15 @@ SDL_Surface *eraser = NULL;
 SDL_Surface *button = NULL;
 SDL_Surface *screen = NULL;
 
+//The event structure that will be used
+SDL_Event event;
+
 //clip structure for pts
 SDL_Rect clip;
 
 //font and font color
 TTF_Font *font = NULL;
 SDL_Color textColor = { 255, 255, 255 };
-
-//The event structure that will be used
-SDL_Event event;
 
 SDL_Surface *load_image( std::string filename ) {
 	//The image that's loaded
