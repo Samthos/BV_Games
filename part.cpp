@@ -31,6 +31,29 @@ Part::Part(double x0, double x1, double vx0, double vx1) {
 	vx[0] = (nx[0] - cx[0])/dt;
 	vx[1] = (nx[1] - cx[1])/dt;
 }
+Part::PART(double x1, double vx1) {
+	//init routine with cx[0] = 0 and vx[0] set to maintain energy;
+	//init values
+	cx[0] = 0;
+	cx[1] = x1;
+	vx[0] = 0;
+	vx[1] = vx1;
+	cx2[0] = 0;
+	cx2[1] = cx[1] * cx[1];
+	accel();
+
+	//initalize vx0
+	vx[0] = -0.0725554 - energy();
+	vx[0] = sqrt(2*vx[0]);
+
+	//set position for iteration 1
+	nx[0] = cx[0] + vx[0]*dt + 0.5*ax[0]*dt2;
+	nx[1] = cx[1] + vx[1]*dt + 0.5*ax[1]*dt2;
+
+	//set velocity for iteration 1
+	vx[0] = (nx[0] - cx[0])/dt;
+	vx[1] = (nx[1] - cx[1])/dt;
+}
 bool Part::reset(double x1, double vx1) {
 	double tnx[2],tcx[2],tpx[2],tcx2[2],tvx[0];
 	//save state

@@ -10,6 +10,7 @@ class Part{
 	void accel();
 public:
 	Part(double, double, double, double);
+	Part(double, double);
 	bool reset(double,double);
 	void update();
 	bool check();
