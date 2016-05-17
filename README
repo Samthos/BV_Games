@@ -1,0 +1,8 @@
+Please see lazy foo tuturials number 1 and 3 to install SDL
+	tutorial 1: http://lazyfoo.net/SDL_tutorials/lesson01/index.php
+	tutorial 3: http://lazyfoo.net/SDL_tutorials/lesson03/index.php
+
+The file screen_paramaters.h controls the size of the screen and the x and y ranges of the plotting region.
+	
+To change the potential edit part::energy and part::accel part.cpp.
+
