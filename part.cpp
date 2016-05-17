@@ -34,10 +34,10 @@ Part::Part(double x0, double x1, double vx0, double vx1) {
 bool Part::reset(double x1, double vx1) {
 	double tnx[2],tcx[2],tpx[2],tcx2[2],tvx[0];
 	//save state
-	tcx[0] = cx[0]; tcx[1] = cx[1];
-	tpx[0] = px[0]; tpx[1] = px[1];
-	tnx[0] = nx[0]; tnx[1] = nx[1];
-	tvx[0] = vx[0]; tvx[1] = vx[1];
+	std::copy(cx,cx+2,tcx);
+	std::copy(px,px+2,tpx);
+	std::copy(nx,nx+2,tnx);
+	std::copy(vx,vx+2;tvx);
 
 	//init values
 	cx[0] = 0;
@@ -63,10 +63,10 @@ bool Part::reset(double x1, double vx1) {
 		return true;
 	}
 	else {
-		cx[0] = tcx[0]; cx[1] = tcx[1];
-		px[0] = tpx[0]; px[1] = tpx[1];
-		nx[0] = tnx[0]; nx[1] = tnx[1];
-		vx[0] = tvx[0]; vx[1] = tvx[1];
+		std::copy(tcx,tcx+2,cx);
+		std::copy(tpx,tpx+2,px);
+		std::copy(tnx,tnx+2,nx);
+		std::copy(tvx,tvx+2;vx);
 		return false;
 	}
 }
