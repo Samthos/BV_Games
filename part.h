@@ -7,6 +7,7 @@ class Part{
 	double px[2], cx[2], nx[2];
 	double cx2[2];
 	double vx[2], ax[2];
+	double sys_energy;
 	void accel();
 public:
 	Part(double, double, double, double);

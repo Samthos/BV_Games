@@ -21,6 +21,7 @@ Part::Part(double x0, double x1, double vx0, double vx1) {
 	vx[1] = vx1;
 	cx2[0] = cx[0] * cx[0];
 	cx2[1] = cx[1] * cx[1];
+	sys_energy=-0.0725554;
 	accel();
 
 	//set position for iteration 1
@@ -40,10 +41,11 @@ Part::PART(double x1, double vx1) {
 	vx[1] = vx1;
 	cx2[0] = 0;
 	cx2[1] = cx[1] * cx[1];
+	sys_energy=-0.0725554;
 	accel();
 
 	//initalize vx0
-	vx[0] = -0.0725554 - energy();
+	vx[0] = sys_energy - energy();
 	vx[0] = sqrt(2*vx[0]);
 
 	//set position for iteration 1
@@ -72,7 +74,7 @@ bool Part::reset(double x1, double vx1) {
 	accel();
 
 	//initalize vx0
-	vx[0] = -0.0725554 - energy();
+	vx[0] = sys_energy - energy();
 	if(vx[0] > 0 ) {
 		vx[0] = sqrt(2*vx[0]);
 
