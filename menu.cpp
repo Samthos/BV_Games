@@ -129,17 +129,23 @@ void MenuObject::display(SDL_Window* &screen)
 						}
 						break;
 					case SDLK_RETURN:
-						switch(state)
+						if( objects[state].type == PLAY )
 						{
-							case 3:
+						}
+						else if( objects[state].type == MENU )
+						{
+							objects[state].display(screen);
+							change = true;
+						}
+						else if( objects[state].type == QUIT )
+						{
 							quit = true;
-							break;
 						}
 						break;
 				}
 			}
 		}
-		if(change)
+		if(change && !quit)
 		{
 			change = false;
 

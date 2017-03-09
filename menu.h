@@ -6,7 +6,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-enum menuObjectType{ MENU, PLAY, QUIT };
+enum menuObjectType{ MENU, PLAY, QUIT, TEXT };
 
 class MenuObject
 {
