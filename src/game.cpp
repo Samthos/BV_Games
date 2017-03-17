@@ -43,6 +43,7 @@ bool game( SDL_Window* &screen, SDL_Renderer* &renderer)
 	}
 
 	t1 = SDL_GetTicks();
+	const Uint8 *state = SDL_GetKeyboardState(NULL);
 	while( quit == false && leave == false ) 
 	{
 		//While there's an event to handle
@@ -55,6 +56,7 @@ bool game( SDL_Window* &screen, SDL_Renderer* &renderer)
 				//Quit the program
 				quit = true;
 			}
+/*
 			if( event.type == SDL_KEYDOWN )
 			{
 				switch( event.key.keysym.sym )
@@ -65,17 +67,40 @@ bool game( SDL_Window* &screen, SDL_Renderer* &renderer)
 					case SDLK_DOWN:
 						player[0].down();
 						break;
+
 					case SDLK_k:
 						player[1].up();
 						break;
 					case SDLK_j:
 						player[1].down();
 						break;
+
 					case SDLK_ESCAPE:
 						leave = true;
 						break;
 				}
 			}
+*/
+		}
+		if( state[SDL_SCANCODE_J] ||  state[SDL_SCANCODE_W] )
+		{
+			player[0].up();
+		}
+		if( state[SDL_SCANCODE_K] ||  state[SDL_SCANCODE_S] )
+		{
+			player[0].down();
+		}
+		if( state[SDL_SCANCODE_UP] )
+		{
+			player[1].up();
+		}
+		if( state[SDL_SCANCODE_DOWN] )
+		{
+			player[1].down();
+		}
+		if( state[SDL_SCANCODE_ESCAPE] )
+		{
+			leave = true;
 		}
 
 		int s = ball.update( player );

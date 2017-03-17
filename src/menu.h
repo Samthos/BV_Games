@@ -29,7 +29,7 @@ public:
 	~MenuObject();
 	MenuObject(std::string);
 
-	bool display(SDL_Window*&, SDL_Renderer*&);
+	int display(SDL_Window*&, SDL_Renderer*&);
 	void read( std::ifstream&, TTF_Font*&, TTF_Font*& );
 	void print(int);
 

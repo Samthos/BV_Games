@@ -36,14 +36,14 @@ int Ball::update(std::vector<Player> &player)
 		{
 			if( xVel < 0 )
 			{
-				xVel *= -1;
+				xVel *= -1.1;
 				int temp = it.rect.x+it.rect.w;
 				temp *= 2;
 				coordinate.x = temp-coordinate.x;
 			}
 			else if( xVel > 0 )
 			{
-				xVel *= -1;
+				xVel *= -1.1;
 				int temp = it.rect.x;
 				temp *= 2;
 				coordinate.x = temp-coordinate.x-2*coordinate.w;
@@ -51,20 +51,6 @@ int Ball::update(std::vector<Player> &player)
 		}
 		else if( SDL_HasIntersection( &coordinate, &inzone ) )
 		{
-			if( xVel < 0 )
-			{
-				xVel *= -1;
-				int temp = it.rect.x+it.rect.w;
-				temp *= 2;
-				coordinate.x = temp-coordinate.x;
-			}
-			else if( xVel > 0 )
-			{
-				xVel *= -1;
-				int temp = it.rect.x;
-				temp *= 2;
-				coordinate.x = temp-coordinate.x-2*coordinate.w;
-			}
 			return it.id;
 		}
 	}

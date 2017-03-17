@@ -39,7 +39,7 @@ MenuObject::MenuObject( std::string filename )
 	largeFontSize = -1;
 	
     	//if(doc.load_file(filename.c_str()))
-    	if(doc.load_file("menu.xml") != -1)
+    	if(doc.load_file("../config/menu.xml") != -1)
 	{
 	    	pugi::xml_node node = doc.first_child();
 		readXML(node);
@@ -133,7 +133,7 @@ void MenuObject::print(int tab)
 	}
 }
 
-bool MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
+int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 {
 	Uint32 t1,t2;
 	std::string title;
@@ -145,12 +145,14 @@ bool MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 	SDL_Event event;
 	SDL_Rect offset;
 	std::vector< SDL_Rect > fg;
-	fg.push_back( { 50,  20, 540, 10} );
-	fg.push_back( { 50, 450, 540, 10} );
-	fg.push_back( {   0,   0, 640,   2} );
-	fg.push_back( {   0,   0,   2, 480} );
-	fg.push_back( {   0, 478, 640,   2} );
-	fg.push_back( { 638,   0,   2, 480} );
+	{
+		fg.push_back( { 50,  20, 540, 10} );
+		fg.push_back( { 50, 450, 540, 10} );
+		fg.push_back( {   0,   0, 640,   2} );
+		fg.push_back( {   0,   0,   2, 480} );
+		fg.push_back( {   0, 478, 640,   2} );
+		fg.push_back( { 638,   0,   2, 480} );
+	}
 
 	SDL_Color bgColor = { 0, 0, 0, 255};
 	SDL_Color fgColor = {255, 255, 255, 255};
@@ -176,6 +178,7 @@ bool MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 			}
 			if( event.type == SDL_KEYDOWN )
 			{
+				//commands to navigate menu
 				switch( event.key.keysym.sym )
 				{
 					case SDLK_k:
@@ -261,7 +264,7 @@ bool MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 		t1 = SDL_GetTicks();
 	}
 
-	return quit;
+	return -1;
 }
 
 void MenuObject::stateInit()

@@ -15,6 +15,7 @@ and may not be redistributed without written permission.*/
 
 int main( int argc, char* args[] ) 
 {
+	int status;
 	SDL_Window *screen = NULL;
 	SDL_Renderer *renderer = NULL;
 	gameParameters gParams;
@@ -25,8 +26,16 @@ int main( int argc, char* args[] )
 		return 1;
 	}
 
-	MenuObject menuObject( "config/menu.xml" );
-	menuObject.display(screen, renderer);
+	MenuObject menuObject( "../config/menu.xml" );
+
+	status = 0;
+	while( status != -1 )
+	{
+		switch( status )
+		{
+			case 0: status = menuObject.display(screen, renderer); break;
+		}
+	}
 
 	clean_up(screen);
 	return 0;
