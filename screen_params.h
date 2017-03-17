@@ -1,2 +1,10 @@
-#define SCREEN_WIDTH_PARAM  360 //width of screen in pixels
-#define SCREEN_HEIGHT_PARAM 240 //height of screen in pixels
+#ifndef GAME_PARAM
+#define GAME_PARAM
+struct gameParameters
+{
+	int width,height; //screen width and height
+	const int defaultWidth  = 640;
+	const int defaultHeight = 480;
+	double scaleFactor;
+};
+#endif

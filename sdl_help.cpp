@@ -1,9 +1,6 @@
 #include "sdl_help.h"
 
-const int SCREEN_WIDTH  = 640;
-const int SCREEN_HEIGHT = 480;
-
-bool init(SDL_Window* &screen) 
+bool init(SDL_Window* &screen, SDL_Renderer* &renderer,  gameParameters &gParams ) 
 {
 	//Initialize all SDL subsystems
 	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 ) 
@@ -17,18 +14,23 @@ bool init(SDL_Window* &screen)
 		return false;
 	}
 
+	gParams.scaleFactor = 1;
+	gParams.width  = gParams.defaultWidth  * gParams.scaleFactor;
+	gParams.height = gParams.defaultHeight * gParams.scaleFactor;
 
 	//Set up the screen
 	screen = SDL_CreateWindow("BV-PONG",
                           SDL_WINDOWPOS_CENTERED,
                           SDL_WINDOWPOS_CENTERED,
-                          SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+                          gParams.width, gParams.height, 0);
 
 	if( screen == NULL )
 	{
 		printf("Window could not be created\n");
 		return false;
 	}
+
+	renderer = SDL_CreateRenderer(screen, -1, 0);
 
 	//If everything initialized fine
 	return true;
@@ -91,5 +93,14 @@ void free_surface( SDL_Surface* &surface)
 	{
 		SDL_FreeSurface(surface);
 		surface = NULL;
+	}
+}
+
+void free_texture( SDL_Texture* &texture)
+{
+	if( texture != NULL )
+	{
+		SDL_DestroyTexture(texture);
+		texture = NULL;
 	}
 }
