@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Menu title="PONG" type="0" largeFont="120">
+	<Menu title="Play"    type="1" largeFont="120" smallFont="40"/>
+	<Menu title="Options" type="0" largeFont="120" smallFont="40">
+		<Menu title=" " type="3" smallFont="40"/>
+		<Menu title="Color Scheme" type="5" smallFont="40">
+			<Option text="Normal" smallFont="40"/>
+			<Option text="Red-Blue" smallFont="40"/>
+			<Option text="Purple-Green" smallFont="40"/>
+		</Menu>
+		<Menu title="back" type="4" smallFont="40"/>
+	</Menu>
+	<Menu title="Credits" type="0" largeFont="120" smallFont="40">
+		<Menu title="Alex Dorn" type="3" smallFont="30"/>
+		<Menu title="Programming/Art" type="3" smallFont="20"/>
+		<Menu title="Lily Wang" type="3" smallFont="30"/>
+		<Menu title="Game Optimization" type="3" smallFont="20"/>
+		<Menu title="back" type="4" smallFont="40"/>
+	</Menu>
+	<Menu title="Quit" type="2" smallFont="40"/>
+</Menu>

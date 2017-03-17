@@ -1,8 +1,0 @@
-PONG 0 4
-	PLAY 1 0
-	OPTIONS 0 1
-		BACK 2 0
-	CREDITS 0 2
-		Alex 3 0
-		BACK 2 0
-	QUIT 2 0
