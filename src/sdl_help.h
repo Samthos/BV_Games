@@ -3,7 +3,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "screen_params.h"
 
-bool game( SDL_Window* &screen, SDL_Renderer*&);
+int game( SDL_Window* &screen, SDL_Renderer*&);
 bool init(SDL_Window* &screen, SDL_Renderer*&, gameParameters &);
 void clean_up( SDL_Window* &screen);
 bool load_font( TTF_Font* &in, std::string filename, int fontSize);
