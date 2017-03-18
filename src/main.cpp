@@ -9,8 +9,9 @@ and may not be redistributed without written permission.*/
 //SDL headers
 
 //project headers
-#include "screen_params.h"
+#include "game_params.h"
 #include "sdl_help.h"
+#include "game.h"
 #include "menu.h"
 
 int main( int argc, char* args[] ) 
@@ -33,7 +34,7 @@ int main( int argc, char* args[] )
 	{
 		switch( status )
 		{
-			case 0: status = menuObject.display(screen, renderer); break;
+			case 0: status = menuObject.display(screen, renderer, gParams); break;
 			case 1: status = game(screen, renderer); break;
 		}
 	}
