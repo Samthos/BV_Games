@@ -2,7 +2,7 @@ SRC=main.cpp sdl_help.cpp menu.cpp game.cpp player.cpp ball.cpp
 OBJ=$(SRC:.cpp=.o)
 
 CXX=g++
-CXX_FLAGS=-std=c++11 -O3 -ggdb
+CXX_FLAGS=-std=c++11 -O0 -ggdb -Wall
 INC=-I../lib
 LIB=-lSDL2 -lSDL2_ttf -L../lib -lpugixml
 

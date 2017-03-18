@@ -52,7 +52,6 @@ MenuObject::MenuObject( std::string filename )
 
 void MenuObject::renderText(SDL_Renderer*& renderer)
 {
-	int i;
 	TTF_Font *font = NULL;
 	SDL_Color color={0,255,0};
 
@@ -60,19 +59,19 @@ void MenuObject::renderText(SDL_Renderer*& renderer)
 	if( largeFontSize != -1 )
 	{
 
-		load_font( font, "assets/high_school_USA_sans.ttf", largeFontSize );
+		load_font( font, "../assets/high_school_USA_sans.ttf", largeFontSize );
 		titleSurfaceLarge = TTF_RenderText_Solid( font, title.c_str(), color );
 		titleTextureLarge = SDL_CreateTextureFromSurface(renderer, titleSurfaceLarge);
 		free_font( font );
 	}
 	if( smallFontSize != -1 )
 	{
-		load_font( font, "assets/high_school_USA_sans.ttf", smallFontSize );
+		load_font( font, "../assets/high_school_USA_sans.ttf", smallFontSize );
 		titleSurfaceSmall = TTF_RenderText_Solid( font, title.c_str(), color );
 		titleTextureSmall = SDL_CreateTextureFromSurface(renderer, titleSurfaceSmall);
 		free_font( font );
 	}
-	for(i=0;i<objects.size();i++)
+	for(uint i=0;i<objects.size();i++)
 	{
 		objects[i].renderText( renderer );
 	}
@@ -138,9 +137,8 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 	Uint32 t1,t2;
 	std::string title;
 	int i,j;
-	bool quit = false;
+	int status = 0;
 	bool leave = false;
-	bool change = true;;
 
 	SDL_Event event;
 	SDL_Rect offset;
@@ -165,7 +163,7 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 	stateInit();
 
 	t1 = SDL_GetTicks();
-	while( quit == false && leave == false )
+	while( status == 0 && leave == false )
 	{
 		//While there's an event to handle
 		while( SDL_PollEvent( &event ) ) 
@@ -174,7 +172,7 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 			if( SDL_QUIT == event.type )
 			{
 				//Quit the program
-				quit = true;
+				status = -1;
 			}
 			if( event.type == SDL_KEYDOWN )
 			{
@@ -183,30 +181,24 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 				{
 					case SDLK_k:
 						stateUp();
-						change = true;
 						break;
 					case SDLK_UP:
 						stateUp();
-						change = true;
 						break;
 					case SDLK_j:
 						stateDown();
-						change = true;
 						break;
 					case SDLK_DOWN:
 						stateDown();
-						change = true;
 						break;
 					case SDLK_RETURN:
 						if( objects[state].type == PLAY )
 						{
-							quit = game(screen,renderer);
-							change = true;
+							status = 1;
 						}
 						else if( objects[state].type == MENU )
 						{
-							quit = objects[state].display(screen, renderer);
-							change = true;
+							status = objects[state].display(screen, renderer);
 						}
 						else if( objects[state].type == UP )
 						{
@@ -214,48 +206,45 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 						}
 						else if( objects[state].type == QUIT )
 						{
-							quit = true;
+							status = -1;
 						}
 						break;
 				}
 			}
 		}
-		if(change && !quit && !leave)
+
+		SDL_SetRenderDrawColor( renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a );
+		SDL_RenderClear( renderer );
+		SDL_SetRenderDrawColor( renderer, fgColor.r, fgColor.g, fgColor.b, fgColor.a );
+		SDL_RenderFillRects( renderer, fg.data(), fg.size());
+
+		offset.x = (640 - titleSurfaceLarge->w)/2;
+		offset.y = 30;
+		offset.w = titleSurfaceLarge->w;
+		offset.h = titleSurfaceLarge->h;
+		SDL_RenderCopy( renderer, titleTextureLarge, NULL, &offset);
+
+		offset.y = 200;
+		for(i=0;i<objects.size();i++)
 		{
-			change = false;
-
-			SDL_SetRenderDrawColor( renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a );
-			SDL_RenderClear( renderer );
-			SDL_SetRenderDrawColor( renderer, fgColor.r, fgColor.g, fgColor.b, fgColor.a );
-			SDL_RenderFillRects( renderer, fg.data(), fg.size());
-
-			offset.x = (640 - titleSurfaceLarge->w)/2;
-			offset.y = 30;
-			offset.w = titleSurfaceLarge->w;
-			offset.h = titleSurfaceLarge->h;
-			SDL_RenderCopy( renderer, titleTextureLarge, NULL, &offset);
-
-			offset.y = 200;
-			for(i=0;i<objects.size();i++)
+			offset.x = (640 - objects[i].titleSurfaceSmall->w)/2;
+			offset.w = objects[i].titleSurfaceSmall->w;
+			offset.h = objects[i].titleSurfaceSmall->h;
+			SDL_RenderCopy( renderer, objects[i].titleTextureSmall, NULL, &offset);
+			if(i == state)
 			{
-				offset.x = (640 - objects[i].titleSurfaceSmall->w)/2;
-				offset.w = objects[i].titleSurfaceSmall->w;
-				offset.h = objects[i].titleSurfaceSmall->h;
-				SDL_RenderCopy( renderer, objects[i].titleTextureSmall, NULL, &offset);
-				if(i == state)
+				SDL_SetRenderDrawColor( renderer, 0, 255, 0, 255 );
+				for(j=0;j<2;j++)
 				{
-					SDL_SetRenderDrawColor( renderer, 0, 255, 0, 255 );
-					for(j=0;j<2;j++)
-					{
-						int shift = (j==0?-10 : objects[i].titleSurfaceSmall->w + 5);
-						SDL_Rect paddle = { offset.x + shift, offset.y , 5, objects[i].titleSurfaceSmall->h };
-						SDL_RenderFillRect( renderer, &paddle );
-					}
+					int shift = (j==0?-10 : objects[i].titleSurfaceSmall->w + 5);
+					SDL_Rect paddle = { offset.x + shift, offset.y , 5, objects[i].titleSurfaceSmall->h };
+					SDL_RenderFillRect( renderer, &paddle );
 				}
-				offset.y += offset.h;
 			}
-			SDL_RenderPresent( renderer );
+			offset.y += offset.h;
 		}
+		SDL_RenderPresent( renderer );
+
 		t2 = SDL_GetTicks();
 		if( (t2 - t1) < 25 )
 		{
@@ -264,7 +253,7 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 		t1 = SDL_GetTicks();
 	}
 
-	return -1;
+	return status;
 }
 
 void MenuObject::stateInit()

@@ -3,11 +3,10 @@
 #include "ball.h"
 #include <vector>
 
-bool game( SDL_Window* &screen, SDL_Renderer* &renderer) 
+int game( SDL_Window* &screen, SDL_Renderer* &renderer) 
 {
 	Uint32 t1,t2;
-	bool quit = false;
-	bool leave = false;
+	int status = 1;
 	SDL_Event event; 
 	SDL_Color bgColor = { 0, 0, 0, 255};
 	SDL_Color fgColor = {255, 255, 255, 255};
@@ -44,7 +43,7 @@ bool game( SDL_Window* &screen, SDL_Renderer* &renderer)
 
 	t1 = SDL_GetTicks();
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
-	while( quit == false && leave == false ) 
+	while( status == 1 )
 	{
 		//While there's an event to handle
 		while( SDL_PollEvent( &event ) ) 
@@ -54,33 +53,8 @@ bool game( SDL_Window* &screen, SDL_Renderer* &renderer)
 			if( SDL_QUIT == event.type )
 			{
 				//Quit the program
-				quit = true;
+				status = -1;
 			}
-/*
-			if( event.type == SDL_KEYDOWN )
-			{
-				switch( event.key.keysym.sym )
-				{
-					case SDLK_UP:
-						player[0].up();
-						break;
-					case SDLK_DOWN:
-						player[0].down();
-						break;
-
-					case SDLK_k:
-						player[1].up();
-						break;
-					case SDLK_j:
-						player[1].down();
-						break;
-
-					case SDLK_ESCAPE:
-						leave = true;
-						break;
-				}
-			}
-*/
 		}
 		if( state[SDL_SCANCODE_J] ||  state[SDL_SCANCODE_W] )
 		{
@@ -100,7 +74,7 @@ bool game( SDL_Window* &screen, SDL_Renderer* &renderer)
 		}
 		if( state[SDL_SCANCODE_ESCAPE] )
 		{
-			leave = true;
+			status = 0;
 		}
 
 		int s = ball.update( player );
@@ -146,5 +120,5 @@ bool game( SDL_Window* &screen, SDL_Renderer* &renderer)
 		}
 		t1 = SDL_GetTicks();
 	}
-	return quit;
+	return status;
 }

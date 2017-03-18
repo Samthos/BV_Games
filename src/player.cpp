@@ -35,10 +35,8 @@ Player& Player::operator= (Player&& p1)
 {
 }
 
-
 void Player::renderScore(SDL_Renderer*& renderer)
 {
-	int i;
 	TTF_Font *font = NULL;
 	SDL_Color color={0,255,0};
 
@@ -50,7 +48,7 @@ void Player::renderScore(SDL_Renderer*& renderer)
 	free_texture(scoreTexture);
 	free_surface(scoreSurface);
 
-	load_font( font, "assets/high_school_USA_sans.ttf", 40);
+	load_font( font, "../assets/high_school_USA_sans.ttf", 40);
 	scoreSurface = TTF_RenderText_Solid( font, temp, color );
 	scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
 	free_font( font );

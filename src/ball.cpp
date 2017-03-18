@@ -19,8 +19,6 @@ void Ball::reset()
 
 	xVel = xVelInit(g1) * (signVelInit(g1)==0?-1:1);
 	yVel = yVelInit(g1) * (signVelInit(g1)==0?-1:1);
-	
-	printf("%f %f\n",xVel,yVel);
 }
 
 int Ball::update(std::vector<Player> &player)
@@ -58,17 +56,13 @@ int Ball::update(std::vector<Player> &player)
 
 	if( coordinate.y < 30 )
 	{
-		printf("%i\t",coordinate.y);
 		yVel *= -1;
 		coordinate.y = 60-coordinate.y;
-		printf("%i\n",coordinate.y);
 	}
 	else if( (coordinate.y+coordinate.h) > 450)
 	{
-		printf("%i\n",coordinate.y+coordinate.h);
 		yVel *= -1;
 		coordinate.y = 2*450 - (coordinate.y+coordinate.h)-coordinate.h;
-		printf("%i\n",coordinate.y+coordinate.h);
 	}
 	return -1;
 }

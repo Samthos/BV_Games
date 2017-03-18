@@ -29,11 +29,12 @@ int main( int argc, char* args[] )
 	MenuObject menuObject( "../config/menu.xml" );
 
 	status = 0;
-	while( status != -1 )
+	while( status >= 0 )
 	{
 		switch( status )
 		{
 			case 0: status = menuObject.display(screen, renderer); break;
+			case 1: status = game(screen, renderer); break;
 		}
 	}
 
