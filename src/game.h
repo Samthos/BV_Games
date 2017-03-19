@@ -1,2 +1,3 @@
 #include <SDL2/SDL.h>
-int game(SDL_Window* &screen, SDL_Renderer*&);
+#include "game_params.h"
+int game(SDL_Window* &screen, SDL_Renderer*&, gameParameters &gParams);

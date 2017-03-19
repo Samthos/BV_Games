@@ -20,6 +20,8 @@ int main( int argc, char* args[] )
 	SDL_Window *screen = NULL;
 	SDL_Renderer *renderer = NULL;
 	gameParameters gParams;
+	gParams.numPlayers = 1;
+	gParams.gameMode = 0;
 
 	//Initialize
 	if( init(screen, renderer, gParams) == false ) 
@@ -35,7 +37,7 @@ int main( int argc, char* args[] )
 		switch( status )
 		{
 			case 0: status = menuObject.display(screen, renderer, gParams); break;
-			case 1: status = game(screen, renderer); break;
+			case 1: status = game(screen, renderer, gParams); break;
 		}
 	}
 

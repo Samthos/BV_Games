@@ -1,6 +1,9 @@
-#include "player.h"
 #include <iostream>
 #include <sstream>
+#include <cmath>
+
+#include "player.h"
+#include "ball.h"
 
 Player::Player()
 {
@@ -33,6 +36,7 @@ Player::Player (Player&& p1)
 }
 Player& Player::operator= (Player&& p1)
 {
+	return *this;
 }
 
 void Player::renderScore(SDL_Renderer*& renderer)
@@ -57,6 +61,58 @@ void Player::renderScore(SDL_Renderer*& renderer)
 	scoreRect.h = scoreSurface->h;
 	scoreRect.x = 320+(1-id)*(-scoreRect.w-40) + id*(40);
 	scoreRect.y = 40;
+}
+
+void Player::AIMove(Ball &ball)
+{
+	double t1,t2;
+	double x,y;
+	double vx,vy;
+
+	//if ball is moving toward left size of screen
+	//try to move
+	if( ball.xVel > 0 )
+	{
+		x  = ball.coordinate.x;
+		y  = ball.coordinate.y;
+		vx = ball.xVel;
+		vy = ball.yVel;
+
+		do
+		{
+			if( vy < 0 ) //ball is moving toward top of the screeen
+			{
+				t1 = (30 - y)/vy;
+			}
+			else
+			{
+				t1 = (450 - (y + ball.coordinate.h))/vy;
+			}
+
+			t2 = ( 580 - (x + ball.coordinate.w))/vx;
+
+			if( t1 < t2 )
+			{
+				x  += vx * t1;
+				y  += vy * t1;
+				vy *= -1;
+			}
+		} while( t1 < t2 );
+
+		y += vy * t2;
+
+		if( std::abs( y+ball.coordinate.h/2 - (rect.y+rect.h/2) ) > 10 )
+		{
+			if( y+ball.coordinate.h/2 < rect.y+rect.h/2 )
+			{
+				up();
+			}
+			else
+			{
+				down();
+			}
+		}
+	}
 }
 void Player::up()
 {
