@@ -1,9 +1,8 @@
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "screen_params.h"
+#include "game_params.h"
 
-int game( SDL_Window* &screen, SDL_Renderer*&);
 bool init(SDL_Window* &screen, SDL_Renderer*&, gameParameters &);
 void clean_up( SDL_Window* &screen);
 bool load_font( TTF_Font* &in, std::string filename, int fontSize);

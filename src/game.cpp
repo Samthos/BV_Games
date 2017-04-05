@@ -3,7 +3,7 @@
 #include "ball.h"
 #include <vector>
 
-int game( SDL_Window* &screen, SDL_Renderer* &renderer) 
+int game(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters &gParams) 
 {
 	Uint32 t1,t2;
 	int status = 1;
@@ -56,6 +56,7 @@ int game( SDL_Window* &screen, SDL_Renderer* &renderer)
 				status = -1;
 			}
 		}
+
 		if( state[SDL_SCANCODE_J] ||  state[SDL_SCANCODE_W] )
 		{
 			player[0].up();
@@ -64,13 +65,21 @@ int game( SDL_Window* &screen, SDL_Renderer* &renderer)
 		{
 			player[0].down();
 		}
-		if( state[SDL_SCANCODE_UP] )
+			
+		if( gParams.numPlayers == 2 )
 		{
-			player[1].up();
+			if( state[SDL_SCANCODE_UP] )
+			{
+				player[1].up();
+			}
+			if( state[SDL_SCANCODE_DOWN] )
+			{
+				player[1].down();
+			}
 		}
-		if( state[SDL_SCANCODE_DOWN] )
+		else
 		{
-			player[1].down();
+			player[1].AIMove(ball);
 		}
 		if( state[SDL_SCANCODE_ESCAPE] )
 		{
@@ -110,7 +119,6 @@ int game( SDL_Window* &screen, SDL_Renderer* &renderer)
 
 		SDL_RenderFillRect( renderer, &player[1].rect );
 		SDL_RenderCopy( renderer, player[1].scoreTexture, NULL, &player[1].scoreRect );
-
 		
 		SDL_RenderPresent( renderer );
 		t2 = SDL_GetTicks();

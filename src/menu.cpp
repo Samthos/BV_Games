@@ -132,7 +132,7 @@ void MenuObject::print(int tab)
 	}
 }
 
-int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
+int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters& gParams)
 {
 	Uint32 t1,t2;
 	std::string title;
@@ -198,7 +198,7 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer)
 						}
 						else if( objects[state].type == MENU )
 						{
-							status = objects[state].display(screen, renderer);
+							status = objects[state].display(screen, renderer, gParams);
 						}
 						else if( objects[state].type == UP )
 						{
