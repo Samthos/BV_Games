@@ -1,5 +1,7 @@
 #include "sdl_help.h"
 
+class Ball;
+
 #ifndef PLAYER
 #define PLAYER
 class Player
@@ -21,6 +23,7 @@ public:
 	Player (Player&&);
 	Player& operator= (Player&&);
 
+	void AIMove(Ball&);
 	void up();
 	void down();
 	void renderScore( SDL_Renderer*&);

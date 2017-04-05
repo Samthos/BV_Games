@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "pugixml.hpp"
+#include "game_params.h"
 
 enum menuObjectType{ MENU, PLAY, QUIT, TEXT, UP, OPTION };
 
@@ -29,7 +30,7 @@ public:
 	~MenuObject();
 	MenuObject(std::string);
 
-	int display(SDL_Window*&, SDL_Renderer*&);
+	int display(SDL_Window*&, SDL_Renderer*&, gameParameters&);
 	void read( std::ifstream&, TTF_Font*&, TTF_Font*& );
 	void print(int);
 
