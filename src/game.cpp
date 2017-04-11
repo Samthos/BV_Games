@@ -8,11 +8,12 @@ int game(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters &gParams)
 	Uint32 t1,t2;
 	int status = 1;
 	SDL_Event event; 
-	SDL_Color bgColor = { 0, 0, 0, 255};
-	SDL_Color fgColor = {255, 255, 255, 255};
-	SDL_Color bdyColor = {255, 0, 0, 255};
-	SDL_Color ballColor = { 0, 255, 0, 255};
-	SDL_Color paddleColor = {0, 255, 0, 255};
+	SDL_Color bgColor = gParams.bgColor;
+	SDL_Color fgColor = gParams.fgColor;
+	SDL_Color bdyColor = gParams.bdyColor;
+	SDL_Color ballColor = gParams.ballColor;
+	SDL_Color paddle_p1_Color = gParams.paddle_p1_Color;
+	SDL_Color paddle_p2_Color = gParams.paddle_p2_Color;
 
 	Ball ball;
 	std::vector< SDL_Rect > fg;
@@ -112,11 +113,11 @@ int game(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters &gParams)
 		SDL_SetRenderDrawColor( renderer, ballColor.r, ballColor.g, ballColor.b, ballColor.a );
 		SDL_RenderFillRect( renderer, &ball.coordinate );
 
-		SDL_SetRenderDrawColor( renderer, paddleColor.r, paddleColor.g, paddleColor.b, paddleColor.a );
-
+		SDL_SetRenderDrawColor( renderer, paddle_p1_Color.r, paddle_p1_Color.g, paddle_p1_Color.b, paddle_p1_Color.a );
 		SDL_RenderFillRect( renderer, &player[0].rect );
 		SDL_RenderCopy( renderer, player[0].scoreTexture, NULL, &player[0].scoreRect );
 
+		SDL_SetRenderDrawColor( renderer, paddle_p2_Color.r, paddle_p2_Color.g, paddle_p2_Color.b, paddle_p2_Color.a );
 		SDL_RenderFillRect( renderer, &player[1].rect );
 		SDL_RenderCopy( renderer, player[1].scoreTexture, NULL, &player[1].scoreRect );
 		

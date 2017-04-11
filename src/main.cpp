@@ -31,6 +31,8 @@ int main( int argc, char* args[] )
 
 	MenuObject menuObject( "../config/menu.xml" );
 
+	loadColors( gParams );
+
 	status = 0;
 	while( status >= 0 )
 	{

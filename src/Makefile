@@ -1,4 +1,4 @@
-SRC=main.cpp sdl_help.cpp menu.cpp game.cpp player.cpp ball.cpp
+SRC=main.cpp sdl_help.cpp menu.cpp game.cpp player.cpp ball.cpp loadColor.cpp
 OBJ=$(SRC:.cpp=.o)
 
 CXX=g++
