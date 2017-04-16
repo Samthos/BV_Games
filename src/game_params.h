@@ -12,6 +12,7 @@ struct gameParameters
 	SDL_Color bgColor = { 0, 0, 0, 255};
 	SDL_Color fgColor = {255, 255, 255, 255};
 	SDL_Color bdyColor = {255, 0, 0, 255};
+	SDL_Color textColor = { 0, 255, 0, 255};
 	SDL_Color ballColor = { 0, 255, 0, 255};
 	SDL_Color paddle_p1_Color = {0, 255, 0, 255};
 	SDL_Color paddle_p2_Color = {0, 255, 0, 255};
