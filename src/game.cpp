@@ -3,48 +3,153 @@
 #include "ball.h"
 #include <vector>
 
-int game(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters &gParams) 
+int display_message(SDL_Renderer* &renderer,
+		gameParameters &gParam,
+		const std::string& message,
+		int font_size,
+		int x,
+		int y,
+		bool center=true,
+		bool select=false)
 {
-	Uint32 t1,t2;
-	int status = 1;
-	SDL_Event event; 
-	SDL_Color bgColor = gParams.bgColor;
-	SDL_Color fgColor = gParams.fgColor;
-	SDL_Color bdyColor = gParams.bdyColor;
-	SDL_Color ballColor = gParams.ballColor;
-	SDL_Color paddle_p1_Color = gParams.paddle_p1_Color;
-	SDL_Color paddle_p2_Color = gParams.paddle_p2_Color;
+	SDL_Rect offset;
+	TTF_Font *font = NULL;
+	std::pair<SDL_Surface*,SDL_Texture*> messageT;
+	messageT.first = NULL;
+	messageT.second = NULL;
+#ifndef WIN32
+	load_font( font, "../assets/high_school_USA_sans.ttf", font_size );
+#else
+	load_font( font, "high_school_USA_sans.ttf", font_size );
+#endif
 
-	Ball ball;
-	std::vector< SDL_Rect > fg;
-	std::vector< SDL_Rect > bdy;
-	std::vector< Player > player(2);;
+	if( font != NULL )
 	{
-		player[0].rect = {50,  210, 10, 60};
-		player[0].id = 0;
-		player[0].renderScore( renderer);
-		player[1].rect = {580, 210, 10, 60};
-		player[1].id = 1;
-		player[1].renderScore( renderer);
+		messageT.first = TTF_RenderText_Solid( font, message.c_str(), gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text]);
+		if( messageT.first != NULL )
+		{
+			messageT.second = SDL_CreateTextureFromSurface(renderer, messageT.first);
+		}
+		free_font(font);
+	}
 
+	offset.y = y;
+	if(center)
+	{
+		offset.x = x - messageT.first->w/2;
+	}
+	else
+	{
+		offset.x = x;
+	}
+	offset.w = messageT.first->w;
+	offset.h = messageT.first->h;
+	SDL_RenderCopy( renderer, messageT.second, NULL, &offset);
+
+	if( select )
+	{
+		SDL_SetRenderDrawColor( renderer, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].r, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].g, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].b, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].a );
+		offset.w = 5;
+		offset.x = x - (messageT.first->w/2) - 5;
+		SDL_RenderFillRect( renderer, &offset );
+		offset.x = x + (messageT.first->w/2) + 5;
+		SDL_RenderFillRect( renderer, &offset );
+	}
+
+	free_surface(messageT.first);
+	free_texture(messageT.second);
+
+	return y + offset.h;
+}
+
+void draw_background( SDL_Renderer* &renderer,
+		gameParameters &gParam,
+		bool init = false)
+{
+	static std::vector< SDL_Rect > fg;
+	static std::vector< SDL_Rect > bdy;
+	if(init == false)
+	{
+		SDL_SetRenderDrawColor( renderer, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].r, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].g, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].b, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].a );
+		SDL_RenderClear( renderer );
+
+		SDL_SetRenderDrawColor( renderer, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].r, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].g, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].b, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].a );
+		SDL_RenderFillRects( renderer, fg.data(), fg.size());
+
+		SDL_SetRenderDrawColor( renderer, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bdy].r, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bdy].g, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bdy].b, 
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bdy].a );
+		SDL_RenderFillRects( renderer, bdy.data(), bdy.size());
+	}
+	else
+	{
 		fg.push_back( { 50,  20, 540, 10} );
 		fg.push_back( { 50, 450, 540, 10} );
 		fg.push_back( {   0,   0, 640,   2} );
 		fg.push_back( {   0,   0,   2, 480} );
 		fg.push_back( {   0, 478, 640,   2} );
 		fg.push_back( { 638,   0,   2, 480} );
-
-		bdy.push_back({50,30,1,420});
-		bdy.push_back({590,30,1,420});
 		for(int i=30;i<450;i+=40)
 		{
 			fg.push_back({310, i, 20, 20});
 		}
+
+		bdy.push_back({50,30,1,420});
+		bdy.push_back({590,30,1,420});
 	}
+
+}
+
+
+std::string get_time(int time,
+		int length=1)
+{
+	std::string str, str_pad;
+	str = std::to_string( time );
+	for(uint i=0;i<length-str.size();i++)
+	{
+		str_pad.push_back('0');
+	}
+	str = str_pad + str;
+	return str;
+}
+
+int game(SDL_Renderer* &renderer,
+		gameParameters &gParam) 
+{
+	Uint32 t1,t2;
+	Uint32 time1,time2;
+	std::string message;
+	int game_status = 1;
+	int return_status = 1;
+	SDL_Event event; 
+
+	Ball ball;
+	std::vector< Player > player(2);;
+	player[0].rect = {50,  210, 10, 60};
+	player[1].rect = {580, 210, 10, 60};
 
 	t1 = SDL_GetTicks();
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
-	while( status == 1 )
+	draw_background(renderer, gParam, true);
+
+	time1 = SDL_GetTicks();
+	time2 = time1+1;
+	while( time2-time1 < 3000 && game_status == 1 )
 	{
 		//While there's an event to handle
 		while( SDL_PollEvent( &event ) ) 
@@ -54,72 +159,24 @@ int game(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters &gParams)
 			if( SDL_QUIT == event.type )
 			{
 				//Quit the program
-				status = -1;
+				game_status = 3;
+				return_status = -1;
 			}
 		}
 
-		if( state[SDL_SCANCODE_J] ||  state[SDL_SCANCODE_W] )
-		{
-			player[0].up();
-		}
-		if( state[SDL_SCANCODE_K] ||  state[SDL_SCANCODE_S] )
-		{
-			player[0].down();
-		}
-			
-		if( gParams.numPlayers == 2 )
-		{
-			if( state[SDL_SCANCODE_UP] )
-			{
-				player[1].up();
-			}
-			if( state[SDL_SCANCODE_DOWN] )
-			{
-				player[1].down();
-			}
-		}
-		else
-		{
-			player[1].AIMove(ball);
-		}
 		if( state[SDL_SCANCODE_ESCAPE] )
 		{
-			status = 0;
+			game_status = 3;
+			return_status = 0;
 		}
 
-		int s = ball.update( player );
-		if( s == 1 )
-		{
-			player[0].score++;
-			player[0].renderScore( renderer );
-			ball.reset();
-		}
-		else if( s == 0 )
-		{
-			player[1].score++;
-			player[1].renderScore( renderer );
-			ball.reset();
-		}
+		draw_background(renderer, gParam);
+		ball.draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::ball]);
+		player[0].draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::paddle_p1]);
+		player[1].draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::paddle_p2]);
 
-		SDL_SetRenderDrawColor( renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a );
-		SDL_RenderClear( renderer );
-
-		SDL_SetRenderDrawColor( renderer, fgColor.r, fgColor.g, fgColor.b, fgColor.a );
-		SDL_RenderFillRects( renderer, fg.data(), fg.size());
-
-		SDL_SetRenderDrawColor( renderer, bdyColor.r, bdyColor.g, bdyColor.b, bdyColor.a );
-		SDL_RenderFillRects( renderer, bdy.data(), bdy.size());
-
-		SDL_SetRenderDrawColor( renderer, ballColor.r, ballColor.g, ballColor.b, ballColor.a );
-		SDL_RenderFillRect( renderer, &ball.coordinate );
-
-		SDL_SetRenderDrawColor( renderer, paddle_p1_Color.r, paddle_p1_Color.g, paddle_p1_Color.b, paddle_p1_Color.a );
-		SDL_RenderFillRect( renderer, &player[0].rect );
-		SDL_RenderCopy( renderer, player[0].scoreTexture, NULL, &player[0].scoreRect );
-
-		SDL_SetRenderDrawColor( renderer, paddle_p2_Color.r, paddle_p2_Color.g, paddle_p2_Color.b, paddle_p2_Color.a );
-		SDL_RenderFillRect( renderer, &player[1].rect );
-		SDL_RenderCopy( renderer, player[1].scoreTexture, NULL, &player[1].scoreRect );
+		message = get_time(3-(time2-time1)/1000);
+		display_message(renderer, gParam, message, 160, 320, 50);
 		
 		SDL_RenderPresent( renderer );
 		t2 = SDL_GetTicks();
@@ -128,6 +185,163 @@ int game(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters &gParams)
 			SDL_Delay( 25 - (t2-t1) );
 		}
 		t1 = SDL_GetTicks();
+		time2 = SDL_GetTicks();
 	}
-	return status;
+
+	time1 = SDL_GetTicks();
+	time2 = time1+1;
+	while( game_status == 1 )
+	{
+		//While there's an event to handle
+		while( SDL_PollEvent( &event ) ) 
+		{
+
+			//If the user has Xed out the window
+			if( SDL_QUIT == event.type )
+			{
+				//Quit the program
+				game_status = 3;
+				return_status = -1;
+			}
+		}
+
+		if( state[SDL_SCANCODE_J] ||  state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP])
+		{
+			player[0].up();
+		}
+		if( state[SDL_SCANCODE_K] ||  state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN])
+		{
+			player[0].down();
+		}
+			
+		player[1].AIMove(ball);
+		if( state[SDL_SCANCODE_ESCAPE] )
+		{
+			game_status = 3;
+			return_status = 0;
+		}
+
+		if( ball.update(player) >= 0 )
+		{
+			game_status = 2;
+		}
+
+		draw_background(renderer, gParam);
+		ball.draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::ball]);
+		player[0].draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::paddle_p1]);
+		player[1].draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::paddle_p2]);
+
+		message = get_time((time2-time1)/1000,3);
+		display_message( renderer, gParam, message, 40, 340, 40, false);
+		
+		SDL_RenderPresent( renderer );
+		t2 = SDL_GetTicks();
+		time2 = SDL_GetTicks();
+		if( (t2 - t1) < 25 )
+		{
+			SDL_Delay( 25 - (t2-t1) );
+		}
+		t1 = SDL_GetTicks();
+	}
+
+	while( game_status == 2 )
+	{
+		//While there's an event to handle
+		while( SDL_PollEvent( &event ) ) 
+		{
+
+			//If the user has Xed out the window
+			if( SDL_QUIT == event.type )
+			{
+				//Quit the program
+				return_status = -1;
+				game_status=3;
+			}
+		}
+
+		if( state[SDL_SCANCODE_RIGHT] )
+		{
+			if(return_status > 0)
+			{
+				return_status--;
+			}
+		}
+		if( state[SDL_SCANCODE_LEFT] )
+		{
+			if(return_status < 1)
+			{
+				return_status++;
+			}
+		}
+		if( state[SDL_SCANCODE_RETURN] )
+		{
+			game_status = 3;
+		}
+		if( state[SDL_SCANCODE_ESCAPE] )
+		{
+			return_status = 0;
+			game_status = 3;
+		}
+
+		draw_background(renderer, gParam);
+		ball.draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::ball]);
+		player[0].draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::paddle_p1]);
+		player[1].draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::paddle_p2]);
+
+		//draw message box
+		{
+			SDL_Rect box;
+			box.x = 160;
+			box.y = 120;
+			box.w = 320;
+			box.h = 240;
+			SDL_SetRenderDrawColor( renderer, 
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].r, 
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].g, 
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].b, 
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].a );
+			SDL_RenderFillRect( renderer, &box );
+
+			SDL_SetRenderDrawColor( renderer, 
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].r, 
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].g, 
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].b, 
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].a );
+			for(int i=0;i<10;i++)
+			{
+				SDL_RenderDrawRect( renderer, &box );
+				box.x = box.x+1;
+				box.y = box.y+1;
+				box.w = box.w-2;
+				box.h = box.h-2;
+			}
+		}
+
+		//write out messgae
+		int y = 130;
+		message = "Final Time";
+		y = display_message(renderer, gParam, message, 40, 320, y);
+
+		message = get_time((time2-time1)/1000,3);
+		y = display_message(renderer, gParam, message, 40, 320, y);
+
+		message = "Play again?";
+		y = display_message(renderer, gParam, message, 40, 320, y);
+
+		message = "Yes";
+		display_message(renderer, gParam, message, 40, 240, y, true, return_status==1);
+
+		message = "No";
+		display_message(renderer, gParam, message, 40, 400, y, true, return_status==0);
+
+		SDL_RenderPresent( renderer );
+		t2 = SDL_GetTicks();
+		if( (t2 - t1) < 25 )
+		{
+			SDL_Delay( 25 - (t2-t1) );
+		}
+		t1 = SDL_GetTicks();
+	}
+
+	return return_status;
 }

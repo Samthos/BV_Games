@@ -29,8 +29,14 @@ int main( int argc, char* args[] )
 		return 1;
 	}
 
+#ifndef WIN32
 	MenuObject menuObject( "../config/menu.xml" );
+#else
+	MenuObject menuObject( "menu.xml" );
+#endif
 
+
+	defaultColors( gParams );
 	loadColors( gParams );
 
 	status = 0;
@@ -39,7 +45,7 @@ int main( int argc, char* args[] )
 		switch( status )
 		{
 			case 0: status = menuObject.display(screen, renderer, gParams); break;
-			case 1: status = game(screen, renderer, gParams); break;
+			case 1: status = game(renderer, gParams); break;
 		}
 	}
 

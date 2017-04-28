@@ -57,34 +57,13 @@ bool load_font( TTF_Font* &in, std::string filename, int fontSize )
 	return true;
 }
 
-bool free_font( TTF_Font* &in ) 
+void free_font( TTF_Font* &in ) 
 {
 	if( in != NULL )
 	{
 		TTF_CloseFont(in);
 		in = NULL;
 	}
-}
-
-bool load_image( SDL_Surface* &surface, SDL_PixelFormat *pxl, std::string filename ) 
-{
-	SDL_Surface *image    = NULL;
-	SDL_Surface *imageOpt = NULL;
-	image = SDL_LoadBMP( filename.c_str() );
-	
-	if(image != NULL)
-	{
-		surface = SDL_ConvertSurface( image, pxl, 0 );
-		SDL_FreeSurface( image );
-		image = NULL;
-	}
-
-	if( surface == NULL )
-	{
-		printf("failed to loaded iamge \"%s\"\n",filename.c_str());
-		return false;
-	}
-	return true;
 }
 
 void free_surface( SDL_Surface* &surface)

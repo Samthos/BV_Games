@@ -15,5 +15,6 @@ public:
 
 	int update(std::vector<Player>&);
 	void reset();
+	void draw(SDL_Renderer* &, const SDL_Color&);
 };
 #endif

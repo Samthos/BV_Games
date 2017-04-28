@@ -35,4 +35,5 @@ public:
 	std::string title;
 	int smallFontSize;
 	int largeFontSize;
+	int draw(SDL_Renderer*&, SDL_Color&, int, int, bool, bool);
 };

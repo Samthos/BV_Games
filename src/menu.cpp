@@ -25,7 +25,7 @@ MenuObject::MenuObject(const std::string filename )
 	largeFontSize = -1;
 	
     	//if(doc.load_file(filename.c_str()))
-    	if(doc.load_file("../config/menu.xml") != -1)
+    	if(doc.load_file(filename.c_str()) != -1)
 	{
 	    	pugi::xml_node node = doc.first_child();
 		readXML(node);
@@ -91,10 +91,83 @@ void MenuObject::print(int tab)
 	}
 }
 
-int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters& gParams)
+int MenuObject::draw(SDL_Renderer*& renderer,
+		SDL_Color& color,
+	       	int x,
+	       	int y,
+	       	bool large,
+	       	bool select)
+{
+	int fontSize;
+	TTF_Font *font = NULL;
+	SDL_Rect offset;
+	std::pair<SDL_Surface*,SDL_Texture*> messageT;
+
+	messageT.first = NULL;
+	messageT.second = NULL;
+	if(large)
+	{
+		fontSize = largeFontSize;
+	}
+	else
+	{
+		fontSize = smallFontSize;
+	}
+#ifndef WIN32
+	load_font( font, "../assets/high_school_USA_sans.ttf", fontSize);
+#else
+	load_font( font, "high_school_USA_sans.ttf", FontSize);
+#endif
+	if( font != NULL )
+	{
+		messageT.first = TTF_RenderText_Solid( font, title.c_str(), color);
+//		messageT.first = TTF_RenderText_Solid( font, title.c_str(), gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text]);
+		if( messageT.first != NULL )
+		{
+			messageT.second = SDL_CreateTextureFromSurface(renderer, messageT.first);
+			if(messageT.second == NULL)
+			{
+				std::cout << "texture failed" << std::endl;
+			}
+		}
+		else
+		{
+			std::cout << "no font" << std::endl;
+		}
+		free_font(font);
+	}
+	
+	offset.x = x - (messageT.first->w)/2;
+	offset.y = y;
+	offset.w = messageT.first->w;
+	offset.h = messageT.first->h;
+	SDL_RenderCopy( renderer, messageT.second, NULL, &offset);
+
+	if( select )
+	{
+		SDL_SetRenderDrawColor( renderer,
+				color.r,
+				color.g,
+				color.b,
+				color.a );
+		for(int j=0;j<2;j++)
+		{
+			int shift = (j==0?-10 : messageT.first->w + 5);
+			SDL_Rect paddle = { offset.x + shift, offset.y , 5, messageT.first->h };
+			SDL_RenderFillRect( renderer, &paddle );
+		}
+	}
+
+	free_surface(messageT.first);
+	free_texture(messageT.second);
+
+	return y + offset.h;
+}
+
+int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer, gameParameters& gParam)
 {
 	Uint32 t1,t2;
-	unsigned int i,j;
+	unsigned int i;
 	int status = 0;
 	bool leave = false;
 
@@ -111,62 +184,7 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer, gameParame
 	}
 
 	TTF_Font *font = NULL;
-	std::pair<SDL_Surface*,SDL_Texture*> menu_title;
-	std::vector< std::pair<SDL_Surface*,SDL_Texture*> > menu_items(objects.size());
-
-	//render title message
-	{
-		menu_title.first = NULL;
-		menu_title.second = NULL;
-		load_font( font, "../assets/high_school_USA_sans.ttf", largeFontSize );
-		if( font != NULL )
-		{
-			menu_title.first = TTF_RenderText_Solid( font, title.c_str(), gParams.textColor);
-			if( menu_title.first != NULL )
-			{
-				menu_title.second = SDL_CreateTextureFromSurface(renderer, menu_title.first);
-				if(menu_title.second == NULL)
-				{
-					std::cout << "texture failed" << std::endl;
-				}
-			}
-			else
-			{
-				std::cout << "no font" << std::endl;
-			}
-			free_font(font);
-		}
-	}
-
-	//render menu 
-	for(i = 0; i < objects.size(); i++)
-	{
-		menu_items[i].first = NULL;
-		menu_items[i].second = NULL;
-
-		load_font( font, "../assets/high_school_USA_sans.ttf", objects[i].smallFontSize );
-		if( font != NULL )
-		{
-			menu_items[i].first = TTF_RenderText_Solid( font, objects[i].title.c_str(), gParams.textColor);
-			if( menu_items[i].first != NULL )
-			{
-				menu_items[i].second = SDL_CreateTextureFromSurface(renderer, menu_items[i].first);
-				if(menu_items[i].second == NULL)
-				{
-					std::cout << "texture failed" << std::endl;
-				}
-			}
-			else
-			{
-				std::cout << "no surface" << std::endl;
-			}
-			free_font(font);
-		}
-		else
-		{
-			std::cout << "no font" << std::endl;
-		}
-	}
+	std::pair<SDL_Surface*,SDL_Texture*> menu_option;
 
 	stateInit();
 
@@ -200,10 +218,16 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer, gameParame
 						stateDown();
 						break;
 					case SDLK_RIGHT:
-						//stateDown();
+						if( objects[state].type == OPTION )
+						{
+							nextColorScheme(gParam);
+						}
 						break;
 					case SDLK_LEFT:
-						//stateDown();
+						if( objects[state].type == OPTION )
+						{
+							prevColorScheme(gParam);
+						}
 						break;
 					case SDLK_RETURN:
 						if( objects[state].type == PLAY )
@@ -212,11 +236,15 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer, gameParame
 						}
 						else if( objects[state].type == MENU )
 						{
-							status = objects[state].display(screen, renderer, gParams);
+							status = objects[state].display(screen, renderer, gParam);
 						}
 						else if( objects[state].type == UP )
 						{
 							leave = true;
+						}
+						else if( objects[state].type == OPTION )
+						{
+							loadColors( gParam );
 						}
 						else if( objects[state].type == QUIT )
 						{
@@ -228,40 +256,93 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer, gameParame
 		}
 
 		//clear window
-		SDL_SetRenderDrawColor( renderer, gParams.bgColor.r, gParams.bgColor.g, gParams.bgColor.b, gParams.bgColor.a );
+		SDL_SetRenderDrawColor( renderer,
+			       	gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].r,
+			       	gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].g,
+			       	gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].b,
+				gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::bg].a );
 		SDL_RenderClear( renderer );
 
 		//draw screen foreground
-		SDL_SetRenderDrawColor( renderer, gParams.fgColor.r, gParams.fgColor.g, gParams.fgColor.b, gParams.fgColor.a );
+		SDL_SetRenderDrawColor( renderer,
+			       	gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].r,
+			       	gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].g,
+			       	gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].b,
+			       	gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::fg].a );
 		SDL_RenderFillRects( renderer, fg.data(), fg.size());
 
 		//draw menu title
-		offset.x = (640 - menu_title.first->w)/2;
-		offset.y = 30;
-		offset.w = menu_title.first->w;
-		offset.h = menu_title.first->h;
-		SDL_RenderCopy( renderer, menu_title.second, NULL, &offset);
+		offset.y = draw( renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text], 320, 30, true, false);
 
 		//draw menu options
 		offset.y = 200;
 		for(i=0;i<objects.size();i++)
 		{
-			offset.x = (640 - menu_items[i].first->w)/2;
-			offset.w = menu_items[i].first->w;
-			offset.h = menu_items[i].first->h;
-			SDL_RenderCopy( renderer, menu_items[i].second, NULL, &offset);
-			if(i == static_cast<unsigned int>(state))
-			{
-				SDL_SetRenderDrawColor( renderer, 0, 255, 0, 255 );
-				for(j=0;j<2;j++)
-				{
-					int shift = (j==0?-10 : menu_items[i].first->w + 5);
-					SDL_Rect paddle = { offset.x + shift, offset.y , 5, menu_items[i].first->h };
-					SDL_RenderFillRect( renderer, &paddle );
-				}
-			}
-			offset.y += offset.h;
+			offset.y = objects[i].draw(renderer, gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text], 320, offset.y, false, i == static_cast<unsigned int>(state));
 		}
+
+		if( objects[state].type == OPTION )
+		{
+			menu_option.first = NULL;
+			menu_option.second = NULL;
+#ifndef WIN32
+			load_font( font, "../assets/high_school_USA_sans.ttf", objects[state].smallFontSize);
+#else
+			load_font( font, "high_school_USA_sans.ttf", objects[state].smallFontSize);
+#endif
+			if( font != NULL )
+			{
+				menu_option.first = TTF_RenderText_Solid( font, gParam.colorSchemeList[gParam.currentColorScheme].name.c_str(), gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text]);
+				if( menu_option.first != NULL )
+				{
+					menu_option.second = SDL_CreateTextureFromSurface(renderer, menu_option.first);
+					if(menu_option.second == NULL)
+					{
+						std::cout << "texture failed" << std::endl;
+					}
+				}
+				else
+				{
+					std::cout << "no font" << std::endl;
+				}
+				free_font(font);
+			}
+
+			offset.y = 190;
+			offset.x = (640 - menu_option.first->w)/2;
+			offset.w = menu_option.first->w;
+			offset.h = menu_option.first->h;
+			SDL_RenderCopy( renderer, menu_option.second, NULL, &offset);
+			free_surface(menu_option.first);
+			free_texture(menu_option.second);
+
+			SDL_SetRenderDrawColor( renderer,
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text].r,
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text].g,
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text].b,
+					gParam.colorSchemeList[gParam.currentColorScheme].colors[Color::text].a );
+			std::vector<SDL_Point> arrow(3);
+			for(i=0;i<8;i++)
+			{
+				arrow[0].x = offset.x - 5;
+				arrow[0].y = offset.y+i;
+				arrow[1].x = offset.x - 5 - offset.h/2+i;
+				arrow[1].y = offset.y+offset.h/2;
+				arrow[2].x = offset.x - 5;
+				arrow[2].y = offset.y+offset.h-i-1;
+				SDL_RenderDrawLines( renderer, arrow.data(), 3);
+
+				arrow[0].x = offset.x + offset.w + 5;
+				arrow[0].y = offset.y+i;
+				arrow[1].x = offset.x + offset.w + 5 + offset.h/2-i;
+				arrow[1].y = offset.y+offset.h/2;
+				arrow[2].x = offset.x + offset.w + 5;
+				arrow[2].y = offset.y+offset.h-i-1;
+				SDL_RenderDrawLines( renderer, arrow.data(), 3);
+			}
+
+		}
+
 		SDL_RenderPresent( renderer );
 
 		//frame rate limiters
@@ -271,14 +352,6 @@ int MenuObject::display(SDL_Window* &screen, SDL_Renderer* &renderer, gameParame
 			SDL_Delay( 25 - (t2-t1) );
 		}
 		t1 = SDL_GetTicks();
-	}
-
-	free_surface(menu_title.first);
-	free_texture(menu_title.second);
-	for(auto& it : menu_items)
-	{
-		free_surface( it.first );
-		free_texture( it.second );
 	}
 
 	return status;
