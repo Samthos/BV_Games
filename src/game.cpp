@@ -120,7 +120,7 @@ std::string get_time(int time,
 {
 	std::string str, str_pad;
 	str = std::to_string( time );
-	for(uint i=0;i<length-str.size();i++)
+	for(unsigned int i=0;i<length-str.size();i++)
 	{
 		str_pad.push_back('0');
 	}
@@ -138,7 +138,7 @@ int game(SDL_Renderer* &renderer,
 	int return_status = 1;
 	SDL_Event event; 
 
-	Ball ball;
+	static Ball ball;
 	std::vector< Player > player(2);;
 	player[0].rect = {50,  210, 10, 60};
 	player[1].rect = {580, 210, 10, 60};
@@ -146,6 +146,8 @@ int game(SDL_Renderer* &renderer,
 	t1 = SDL_GetTicks();
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
 	draw_background(renderer, gParam, true);
+
+	ball.reset();
 
 	time1 = SDL_GetTicks();
 	time2 = time1+1;

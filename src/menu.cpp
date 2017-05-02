@@ -116,7 +116,7 @@ int MenuObject::draw(SDL_Renderer*& renderer,
 #ifndef WIN32
 	load_font( font, "../assets/high_school_USA_sans.ttf", fontSize);
 #else
-	load_font( font, "high_school_USA_sans.ttf", FontSize);
+	load_font( font, "high_school_USA_sans.ttf", fontSize);
 #endif
 	if( font != NULL )
 	{

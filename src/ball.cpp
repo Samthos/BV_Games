@@ -17,7 +17,7 @@ void Ball::reset()
 
 	coordinate = {310, 230, 20, 20};
 
-	xVel = -xVelInit(g1);
+	xVel = xVelInit(g1);
 	yVel = yVelInit(g1) * (signVelInit(g1)==0?-1:1);
 }
 
