@@ -1,0 +1,6 @@
+-Integrate support for autotools
+-Add full screen support
+-Add persistance file
+	-recall last used color setting
+	-create high score list
+-Pause menu for game loop
