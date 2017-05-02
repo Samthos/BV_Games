@@ -3,11 +3,7 @@
 	<Menu title="Play"    type="1" largeFont="120" smallFont="40"/>
 	<Menu title="Options" type="0" largeFont="120" smallFont="40">
 		<Menu title=" " type="3" smallFont="40"/>
-		<Menu title="Color Scheme" type="5" smallFont="40">
-			<Option text="Normal" smallFont="40"/>
-			<Option text="Red-Blue" smallFont="40"/>
-			<Option text="Purple-Green" smallFont="40"/>
-		</Menu>
+		<Menu title="Color Scheme" type="5" smallFont="40" file="../config/color.xml"/>
 		<Menu title="back" type="4" smallFont="40"/>
 	</Menu>
 	<Menu title="Credits" type="0" largeFont="120" smallFont="40">
