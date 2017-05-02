@@ -7,10 +7,10 @@
 		<Menu title="back" type="4" smallFont="40"/>
 	</Menu>
 	<Menu title="Credits" type="0" largeFont="120" smallFont="40">
-		<Menu title="Alex Dorn" type="3" smallFont="30"/>
+		<Menu title="Alex Doran" type="3" smallFont="30"/>
 		<Menu title="Programming/Art" type="3" smallFont="20"/>
-		<Menu title="Lily Wang" type="3" smallFont="30"/>
-		<Menu title="Game Optimization" type="3" smallFont="20"/>
+		<Menu title="Iris Huang & Lily Wang" type="3" smallFont="30"/>
+		<Menu title="Vision Therapy Consultation" type="3" smallFont="20"/>
 		<Menu title="back" type="4" smallFont="40"/>
 	</Menu>
 	<Menu title="Quit" type="2" smallFont="40"/>
